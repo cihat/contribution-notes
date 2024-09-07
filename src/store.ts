@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import type { responseType, UserContributionStore } from "./types";
+import type { UserContributions, UserContributionStore } from "./types";
 
 function createUserContributionStore() {
   const store = writable<UserContributionStore>({
@@ -18,12 +18,20 @@ function createUserContributionStore() {
         return state;
       });
     },
-    setUserContributions: (userContributions: responseType) => {
+    setUserContributions: (userContributions: UserContributions) => {
       store.update((state) => {
         state.userContributions = userContributions;
         return state;
       });
-    }
+    },
+    //getting user name
+    getUserName: () => {
+      let userName = "";
+      store.subscribe((state) => {
+        userName = state.userName;
+      });
+      return userName;
+    },
   }
 }
 

@@ -20,28 +20,10 @@ export interface UserContributions {
   contributions: Contribution[] | Record<string, any>;
 }
 
-
-export type responseType = {
-  //TODO: Fix this type
-  years: string,
-  contributions: any
-  // years: {
-  //   [key: string]: {
-  //     total: number;
-  //     contributions: {
-  //       [key: string]: number;
-  //     }
-  //   },
-  //   contributions:
-  //   {
-  //     [key: string]: number;
-  //   }
-  // }
-
-}
+// }
 export type UserContributionStore = {
   userName: string;
-  userContributions: responseType
+  userContributions: UserContributions
 }
 
 export enum FormatEnum {

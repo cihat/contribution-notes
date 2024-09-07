@@ -1,17 +1,18 @@
 // @ts-nocheck
-
 import cheerio from "cheerio";
 import { COLOR_MAP } from "../constants";
 import _ from "lodash";
 import { FormatEnum, type UserContributions, type YearData } from "~/types";
 
 class GithubService {
-  username = "";
-  format = "";
+  private username: string;
+  private format: string;
+
   constructor(username: string, format: FormatEnum) {
-    this.fetchYears = this.fetchYears.bind(this);
-    this.fetchDataForYear = this.fetchDataForYear.bind(this);
-    this.fetchDataForAllYears = this.fetchDataForAllYears.bind(this);
+    if (!username || username === "") {
+      throw new Error("Please provide a username");
+    }
+
     this.username = username;
     this.format = format;
   }
@@ -122,7 +123,7 @@ class GithubService {
         })(),
         contributions:
           this.format === FormatEnum.nested
-            ? resp.reduce((acc, curr) => _.merge(acc, curr.contributions))
+            ? resp.reduce((acc, curr) => _.merge(acc, curr.contributions), {})
             : resp
               .reduce((list, curr) => [...list, ...curr.contributions], [])
               .sort((a, b) => {
@@ -133,6 +134,20 @@ class GithubService {
       };
     });
   }
+
+  public setUserName = (username: string) => {
+    this.username = username;
+  }
 }
 
-export default GithubService;
+// Singleton instance
+let githubServiceInstance: GithubService | null = null;
+
+export function getGithubService(username?: string = "", format: FormatEnum): GithubService {
+  if (!githubServiceInstance) {
+    githubServiceInstance = new GithubService(username, format);
+  }
+  return githubServiceInstance;
+}
+
+export default githubServiceInstance;

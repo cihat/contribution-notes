@@ -2,34 +2,36 @@
 	import { userStore } from '~/store';
 	import { Input } from '$lib/components/ui/input/';
 	import { toast } from 'svelte-sonner';
-	import { onMount } from 'svelte';
+	import { Toaster } from '$lib/components/ui/sonner';
 
 	let username: string = '';
-	const endpoint = '/github';
 
 	async function getData() {
-		fetch(endpoint)
+		const endpoint = `/github?username=${userStore.getUserName()}`;
+		fetch(`${endpoint}`)
 			.then((res) => res.json())
 			.then((data) => {
-				console.log(data);
+				if (data.error) {
+					console.log('data: ', data);
+
+					toast.error('', {
+						description: `User not found! \n${data.error}`
+					});
+					return new Error(data.message);
+				}
+
 				userStore.setUserContributions(data);
+				toast.success('', {
+					description: `User found successfully 🚀`
+				});
 			})
 			.catch((err) => {
-				toast.success('Event has been created', {
-					description: 'Sunday, December 03, 2023 at 9:00 AM',
-					action: {
-						label: 'Undo',
-						onClick: () => console.info('Undo')
-					}
+				toast.error('', {
+					description: `User not found! \n${err}`
 				});
-				toast.success('Event has been created', {
-					description: 'Sunday, December 03, 2023 at 9:00 AM',
-					action: {
-						label: 'Undo',
-						onClick: () => console.info('Undo')
-					}
-				});
-				console.log(err);
+			})
+			.finally(() => {
+				username = '';
 			});
 	}
 
@@ -39,12 +41,11 @@
 		if (e.key === 'Enter') {
 			userStore.setUserName(target.value);
 			getData();
-			username = '';
 		}
 	};
 
 	userStore.subscribe(async (value) => {
-		console.log('value', value);
+		console.log(' sidebar value: ', value);
 	});
 </script>
 
@@ -57,4 +58,5 @@
 			on:keydown={handleInput}
 		/>
 	</div>
+	<Toaster />
 </aside>
