@@ -37,6 +37,7 @@
 		"bits-ui": "^0.21.13",
 		"cheerio": "1.0.0-rc.12",
 		"clsx": "^2.1.1",
+		"date-fns": "^3.6.0",
 		"github-contributions-canvas": "^0.7.0",
 		"lodash": "^4.17.21",
 		"mode-watcher": "^0.4.1",
