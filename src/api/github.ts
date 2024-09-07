@@ -1,48 +1,33 @@
 // @ts-nocheck
+//These codes were taken from https://github.com/sallar/github-contributions-chart/blob/master/src/utils/api/fetch.js 
 
 import cheerio from "cheerio"
+import { COLOR_MAP } from "../constants";
+import _ from "lodash";
 
 
-async function fetchYears(username: string) {
-  const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-  const targetUrl = `https://github.com/${username}?tab=contributions`;
-
-  console.log('import.meta.env.VITE_GITHUB_TOKEN >>', import.meta.env.VITE_GITHUB_TOKEN);
-  const data = await fetch(proxyUrl + targetUrl, {
+async function fetchYears(username) {
+  const data = await fetch(`https://github.com/${username}?tab=contributions`, {
     headers: {
-      'authorization': `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
       "x-requested-with": "XMLHttpRequest"
     }
   });
+  const body = await data.text();
+  const $ = cheerio.load(body);
+  return $(".js-year-link")
+    .get()
+    .map((a) => {
+      const $a = $(a);
+      const href = $a.attr("href");
+      const githubUrl = new URL(`https://github.com${href}`);
+      githubUrl.searchParams.set("tab", "contributions");
+      const formattedHref = `${githubUrl.pathname}${githubUrl.search}`;
 
-  const text = await data.text();
-  console.log(text);
-  return;
-  // console.log('import.meta.env.VITE_GITHUB_TOKEN >>', import.meta.env.VITE_GITHUB_TOKEN);
-  // const data = await fetch(`https://github.com/${username}?tab=contributions`, {
-
-  //   headers: {
-  //     // 'Authorization': `token ${process.env.GITHUB_TOKEN}`
-  //     'authorization': `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
-  //     "x-requested-with": "XMLHttpRequest"
-  //   }
-  // });
-  // const body = await data.text();
-  // const $ = cheerio.load(body);
-  // return $(".js-year-link")
-  //   .get()
-  //   .map((a: any) => {
-  //     const $a = $(a);
-  //     const href = $a.attr("href");
-  //     const githubUrl = new URL(`https://github.com${href}`);
-  //     githubUrl.searchParams.set("tab", "contributions");
-  //     const formattedHref = `${githubUrl.pathname}${githubUrl.search}`;
-
-  //     return {
-  //       href: formattedHref,
-  //       text: $a.text().trim()
-  //     };
-  //   });
+      return {
+        href: formattedHref,
+        text: $a.text().trim()
+      };
+    });
 }
 
 async function fetchDataForYear(url: string, year: string, format: string) {
@@ -60,7 +45,7 @@ async function fetchDataForYear(url: string, year: string, format: string) {
     .text()
     .trim()
     .match(/^([0-9,]+)\s/);
-  let contribCount: any;
+  let contribCount;
   if (contribText) {
     [contribCount] = contribText;
     contribCount = parseInt(contribCount.replace(/,/g, ""), 10);
