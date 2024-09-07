@@ -12,22 +12,18 @@
 			.then((res) => res.json())
 			.then((data) => {
 				if (data.error) {
-					console.log('data: ', data);
-
-					toast.error('', {
-						description: `User not found! \n${data.error}`
-					});
+					toast.error('User not found', { description: data.error });
 					return new Error(data.message);
 				}
 
 				userStore.setUserContributions(data);
-				toast.success('', {
-					description: `User found successfully 🚀`
+				toast.success('User found successfully 🚀', {
+					description: "User's contributions are fetched successfully!"
 				});
 			})
 			.catch((err) => {
-				toast.error('', {
-					description: `User not found! \n${err}`
+				toast.error('User not found!', {
+					description: err
 				});
 			})
 			.finally(() => {
@@ -38,25 +34,20 @@
 	const handleInput = (e: KeyboardEvent) => {
 		const target = e.target as HTMLInputElement;
 
-		if (e.key === 'Enter') {
+		if (e.key === 'Enter' && target.value) {
 			userStore.setUserName(target.value);
 			getData();
 		}
 	};
-
-	userStore.subscribe(async (value) => {
-		console.log(' sidebar value: ', value);
-	});
 </script>
 
-<aside>
-	<div class="m-2">
-		<Input
-			type="text"
-			placeholder="Github Username..."
-			bind:value={username}
-			on:keydown={handleInput}
-		/>
-	</div>
+<aside class="sticky top-0 h-screen p-2 pt-4">
+	<Input
+		type="text"
+		placeholder="Github Username..."
+		bind:value={username}
+		on:keydown={handleInput}
+		class="m-auto"
+	/>
 	<Toaster />
 </aside>

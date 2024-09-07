@@ -4,18 +4,15 @@
 	import * as Resizable from '$lib/components/ui/resizable';
 	import Sidebar from './(components)/sidebar.svelte';
 	import { userStore } from '~/store';
+	import Chart from './(components)/chart.svelte';
 </script>
 
-<main>
-	<Resizable.PaneGroup direction="horizontal" class="!h-screen border">
-		<Resizable.Pane defaultSize={25} minSize={20} maxSize={30}>
-			<Sidebar />
-		</Resizable.Pane>
-		<Resizable.Handle withHandle />
-		<Resizable.Pane defaultSize={75}>
-			<div class="flex h-full items-center justify-center p-6">
-				<span class="font-semibold">Content</span>
-			</div>
-		</Resizable.Pane>
-	</Resizable.PaneGroup>
-</main>
+<Resizable.PaneGroup direction="horizontal" class="flex">
+	<Resizable.Pane defaultSize={25} minSize={20} maxSize={30}>
+		<Sidebar />
+	</Resizable.Pane>
+	<Resizable.Handle withHandle />
+	<Resizable.Pane defaultSize={75} class="flex justify-center">
+		<Chart />
+	</Resizable.Pane>
+</Resizable.PaneGroup>

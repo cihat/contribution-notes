@@ -1,6 +1,6 @@
 {
 	"name": "contribution-notes",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
@@ -36,6 +36,7 @@
 	"dependencies": {
 		"cheerio": "1.0.0-rc.12",
 		"clsx": "^2.1.1",
+		"github-contributions-canvas": "^0.7.0",
 		"lodash": "^4.17.21",
 		"mode-watcher": "^0.4.1",
 		"paneforge": "^0.0.5",

@@ -9,4 +9,21 @@ export const COLOR_MAP = {
 };
 
 export const username = "cihat"
-export const format = FormatEnum.nested
+export const format = FormatEnum.flat
+
+export const availableThemes = {
+  standard: "GitHub",
+  classic: "GitHub Classic",
+  githubDark: "GitHub Dark",
+  halloween: "Halloween",
+  teal: "Teal",
+  leftPad: "@left_pad",
+  dracula: "Dracula",
+  blue: "Blue",
+  panda: "Panda 🐼",
+  sunny: "Sunny",
+  pink: "Pink",
+  YlGnBu: "YlGnBu",
+  solarizedDark: 'Solarized Dark',
+  solarizedLight: 'Solarized Light'
+};

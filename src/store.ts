@@ -24,7 +24,7 @@ function createUserContributionStore() {
         return state;
       });
     },
-    //getting user name
+    //TODO: refactor it these getting functions
     getUserName: () => {
       let userName = "";
       store.subscribe((state) => {
@@ -32,6 +32,16 @@ function createUserContributionStore() {
       });
       return userName;
     },
+    getUserContributions: () => {
+      let userContributions: UserContributions = {
+        years: {},
+        contributions: {}
+      };
+      store.subscribe((state) => {
+        userContributions = state.userContributions;
+      });
+      return userContributions;
+    }
   }
 }
 
