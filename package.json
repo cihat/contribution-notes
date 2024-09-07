@@ -34,6 +34,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"bits-ui": "^0.21.13",
 		"cheerio": "1.0.0-rc.12",
 		"clsx": "^2.1.1",
 		"github-contributions-canvas": "^0.7.0",

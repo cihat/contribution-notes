@@ -3,10 +3,13 @@
 	import { Input } from '$lib/components/ui/input/';
 	import { toast } from 'svelte-sonner';
 	import { Toaster } from '$lib/components/ui/sonner';
+	import { Button } from '$lib/components/ui/button';
 
 	let username: string = '';
 
 	async function getData() {
+		userStore.setUserName(username);
+
 		const endpoint = `/github?username=${userStore.getUserName()}`;
 		fetch(`${endpoint}`)
 			.then((res) => res.json())
@@ -35,19 +38,20 @@
 		const target = e.target as HTMLInputElement;
 
 		if (e.key === 'Enter' && target.value) {
-			userStore.setUserName(target.value);
+			username = target.value;
 			getData();
 		}
 	};
 </script>
 
-<aside class="sticky top-0 h-screen p-2 pt-4">
+<aside class="sticky top-0 flex h-screen p-2 pt-4">
 	<Input
 		type="text"
 		placeholder="Github Username..."
 		bind:value={username}
 		on:keydown={handleInput}
-		class="m-auto"
+		class="mr-2"
 	/>
+	<Button variant="outline" on:click={getData}>Contributions 🚀</Button>
 	<Toaster />
 </aside>
