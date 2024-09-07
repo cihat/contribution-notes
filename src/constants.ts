@@ -1,3 +1,5 @@
+import { FormatEnum } from "./types";
+
 export const COLOR_MAP = {
   0: "#ebedf0",
   1: "#9be9a8",
@@ -7,4 +9,4 @@ export const COLOR_MAP = {
 };
 
 export const username = "cihat"
-export const format = "nested"
+export const format = FormatEnum.nested
