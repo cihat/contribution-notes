@@ -20,10 +20,17 @@ export interface UserContributions {
   contributions: Contribution[] | Record<string, any>;
 }
 
-// }
+export enum Status {
+  Idle = "idle",
+  Loading = "loading",
+  Success = "success",
+  Error = "error"
+}
+
 export type UserContributionStore = {
   userName: string;
   userContributions: UserContributions
+  status: Status | null;
 }
 
 export enum FormatEnum {

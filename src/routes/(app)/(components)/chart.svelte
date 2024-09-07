@@ -1,50 +1,72 @@
 <script lang="ts">
 	// @ts-nocheck
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { userStore } from '~/store';
+	import { Status } from '~/types';
 
 	let canvas: HTMLCanvasElement;
-	let isErr = false;
-
-	userStore.subscribe((value) => {
-		const unsubscribe = userStore.subscribe((value) => {
-			const { userContributions, userName } = value;
-			if (userName === '') {
-				return toast.error("Chart couldn't be drawn!", {
-					description: 'User contributions not found!'
-				});
-			}
-
-			draw(userContributions);
-		});
-
-		return () => {
-			unsubscribe();
-		};
-	});
+	const store = $userStore;
 
 	const draw = async (contributions) => {
 		if (!canvas || !contributions) {
-			isErr = true;
 			return;
 		}
+		// const { drawContributions } = await import('~/canvas');
 		const { drawContributions } = await import('github-contributions-canvas');
 
 		drawContributions(canvas, {
 			data: contributions,
-			username: userStore.getUserName(),
+			username: store.userName,
 			themeName: 'standard',
 			footerText: ''
 		});
 	};
+
+	const unsubscribe = userStore.subscribe((value) => {
+		const { userContributions, userName } = value;
+		if (userName === '') {
+			return toast.error("Chart couldn't be drawn!", {
+				description: 'User contributions not found!'
+			});
+		}
+
+		draw(userContributions);
+	});
+
+	onDestroy(() => {
+		unsubscribe();
+		store.userContributions = null;
+		if (store.isErr) {
+			store.setStatus(Status.Idle);
+		}
+	});
+
+	userStore.subscribe((store) => {
+		console.log('store', store);
+	});
 </script>
 
 <div class="no-scrollbar chart-wrapper flex min-h-screen justify-center overflow-auto">
-	{#if isErr}
-		<p class="text-red-500">Error occurred while drawing chart!</p>
+	{#if store.status == Status.Error}
+		<div class="flex items-center justify-center">
+			<p class=" atext-red-500 text-center align-middle text-4xl text-red-400">
+				Error occurred while drawing chart! 😢
+			</p>
+		</div>
+	{:else if store.status == Status.Loading}
+		<div class="flex items-center justify-center">
+			<p class=" text-center align-middle text-4xl font-bold text-blue-500">Loading chart...</p>
+		</div>
+	{:else if store.status == Status.Success || store.status == Status.Idle}
+		<canvas bind:this={canvas} />
+	{:else if store.status == Status.Idle}
+		<div class="items center flex items-center justify-center">
+			<p class="text-center align-middle text-4xl font-bold text-orange-500">
+				Search for a user to draw chart!
+			</p>
+		</div>
 	{/if}
-	<canvas bind:this={canvas} />
 </div>
 
 <style>

@@ -1,14 +1,23 @@
 import { writable } from "svelte/store";
-import type { UserContributions, UserContributionStore } from "./types";
+import { Status, type UserContributions } from "./types";
+
+interface State {
+  userName: string;
+  userContributions: UserContributions;
+  status: Status;
+}
 
 function createUserContributionStore() {
-  const store = writable<UserContributionStore>({
+  const initialState: State = {
     userName: "",
     userContributions: {
       years: {},
       contributions: {}
-    }
-  });
+    },
+    status: Status.Idle
+  };
+
+  const store = writable<State>(initialState);
 
   return {
     subscribe: store.subscribe,
@@ -20,29 +29,22 @@ function createUserContributionStore() {
     },
     setUserContributions: (userContributions: UserContributions) => {
       store.update((state) => {
-        state.userContributions = userContributions;
+        if (userContributions.years.length === 0 || Object.keys(userContributions.contributions).length === 0) {
+          state.status = Status.Error;
+        } else {
+          state.userContributions = userContributions;
+          state.status = Status.Success;
+        }
         return state;
       });
     },
-    //TODO: refactor it these getting functions
-    getUserName: () => {
-      let userName = "";
-      store.subscribe((state) => {
-        userName = state.userName;
+    setStatus: (status: Status) => {
+      store.update((state) => {
+        state.status = status;
+        return state;
       });
-      return userName;
     },
-    getUserContributions: () => {
-      let userContributions: UserContributions = {
-        years: {},
-        contributions: {}
-      };
-      store.subscribe((state) => {
-        userContributions = state.userContributions;
-      });
-      return userContributions;
-    }
-  }
+  };
 }
 
 export const userStore = createUserContributionStore();
