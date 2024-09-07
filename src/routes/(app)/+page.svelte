@@ -8,11 +8,11 @@
 </script>
 
 <Resizable.PaneGroup direction="horizontal" class="flex">
-	<Resizable.Pane defaultSize={25} minSize={20} maxSize={30}>
+	<Resizable.Pane defaultSize={25} minSize={15} maxSize={30}>
 		<Sidebar />
 	</Resizable.Pane>
 	<Resizable.Handle withHandle />
-	<Resizable.Pane defaultSize={75} class="flex justify-center">
+	<Resizable.Pane defaultSize={50} minSize={50} maxSize={50}>
 		<Chart />
 	</Resizable.Pane>
 </Resizable.PaneGroup>

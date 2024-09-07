@@ -24,8 +24,6 @@
 		};
 	});
 
-	onMount(() => {});
-
 	const draw = async (contributions) => {
 		if (!canvas || !contributions) {
 			isErr = true;
@@ -42,11 +40,21 @@
 	};
 </script>
 
-<div>
-	<div class="mx-0 my-auto flex flex-grow items-center justify-center overscroll-y-auto">
-		{#if isErr}
-			<p class="text-red-500">Error occurred while drawing chart!</p>
-		{/if}
-		<canvas bind:this={canvas} />
-	</div>
+<div class="no-scrollbar chart-wrapper flex min-h-screen justify-center overflow-auto">
+	{#if isErr}
+		<p class="text-red-500">Error occurred while drawing chart!</p>
+	{/if}
+	<canvas bind:this={canvas} />
 </div>
+
+<style>
+	.chart-wrapper {
+		background-color: #f5f5f5;
+		height: 100vh;
+		margin: 20 auto 0;
+	}
+	canvas {
+		width: 100%;
+		height: min-content;
+	}
+</style>
