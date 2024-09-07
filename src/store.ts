@@ -1,48 +1,46 @@
 import { writable } from "svelte/store";
-import { Status, type UserContributions } from "./types";
+import { Status, type State, type UserContributions } from "./types";
 
-interface State {
-  userName: string;
-  userContributions: UserContributions;
-  status: Status;
-}
+const initialState: State = {
+  userName: "",
+  userContributions: null,
+  status: Status.Idle,
+};
 
 function createUserContributionStore() {
-  const initialState: State = {
-    userName: "",
-    userContributions: {
-      years: {},
-      contributions: {}
-    },
-    status: Status.Idle
-  };
-
-  const store = writable<State>(initialState);
+  const { subscribe, update, set } = writable<State>(initialState);
 
   return {
-    subscribe: store.subscribe,
+    subscribe,
     setUserName: (userName: string) => {
-      store.update((state) => {
-        state.userName = userName;
-        return state;
-      });
+      update((state) => ({
+        ...state,
+        userName,
+      }));
     },
     setUserContributions: (userContributions: UserContributions) => {
-      store.update((state) => {
-        if (userContributions.years.length === 0 || Object.keys(userContributions.contributions).length === 0) {
-          state.status = Status.Error;
-        } else {
-          state.userContributions = userContributions;
-          state.status = Status.Success;
+      update((state) => {
+        if (!userContributions.years.length || !Object.keys(userContributions.contributions).length) {
+          return {
+            ...state,
+            status: Status.Error,
+          };
         }
-        return state;
+        return {
+          ...state,
+          userContributions,
+          status: Status.Success,
+        };
       });
     },
     setStatus: (status: Status) => {
-      store.update((state) => {
-        state.status = status;
-        return state;
-      });
+      update((state) => ({
+        ...state,
+        status,
+      }));
+    },
+    reset: () => {
+      set(initialState);
     },
   };
 }

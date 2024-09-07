@@ -4,30 +4,36 @@
 	import { toast } from 'svelte-sonner';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import { Button } from '$lib/components/ui/button';
-	import { Status } from '~/types';
+	import { Status, type State } from '~/types';
+	import { onDestroy } from 'svelte';
 
 	let username: string = '';
-	const store = $userStore;
+	let store: State;
+	const unsubscribe = userStore.subscribe((value) => (store = value));
 
 	async function getData() {
+		if (!username) {
+			toast.error('Please enter a GitHub username');
+			return;
+		}
+
 		userStore.setUserName(username);
 		userStore.setStatus(Status.Loading);
 
-		const endpoint = `/github?username=${store.userName}`;
-		fetch(`${endpoint}`)
-			.then((res) => res.json())
+		const endpoint = `/github?username=${username}`;
+		fetch(endpoint)
+			.then(async (res) => await res.json())
 			.then((data) => {
 				if (data.error) {
 					toast.error('User not found', { description: data.error });
 					userStore.setStatus(Status.Error);
-					return new Error(data.message);
+				} else {
+					userStore.setUserContributions(data);
+					userStore.setStatus(Status.Success);
+					toast.success('User found successfully 🚀', {
+						description: "User's contributions are fetched successfully!"
+					});
 				}
-
-				userStore.setUserContributions(data);
-				userStore.setStatus(Status.Success);
-				toast.success('User found successfully 🚀', {
-					description: "User's contributions are fetched successfully!"
-				});
 			})
 			.catch((err) => {
 				toast.error('User not found!', { description: err });
@@ -35,6 +41,7 @@
 			})
 			.finally(() => {
 				username = '';
+				//FIX: here broken code
 				userStore.setStatus(Status.Success);
 			});
 	}
@@ -49,9 +56,11 @@
 	};
 
 	let inputText = '';
-	$: store.status === Status.Loading
-		? (inputText = 'Loading...')
-		: (inputText = 'Contributions 🚀.');
+	$: inputText = store.status === Status.Loading ? 'Loading...' : 'Contributions 🚀.';
+
+	onDestroy(() => {
+		unsubscribe();
+	});
 </script>
 
 <aside class="sticky top-0 flex h-screen p-2 pt-4">

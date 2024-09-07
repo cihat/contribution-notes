@@ -27,13 +27,13 @@ export enum Status {
   Error = "error"
 }
 
-export type UserContributionStore = {
-  userName: string;
-  userContributions: UserContributions
-  status: Status | null;
-}
-
 export enum FormatEnum {
   nested = "nested",
   flat = "flat"
+}
+
+export interface State {
+  userName: string;
+  userContributions: UserContributions | null;
+  status: Status;
 }
