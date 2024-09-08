@@ -7,8 +7,7 @@ async function fetchUserContributions(username: string, format: FormatEnum) {
   const githubService = getGithubService();
   githubService.setUserName(username);
   githubService.setFormat(format);
-
-  return await githubService.fetchDataForAllYears();
+  return githubService.fetchDataForAllYears();
 }
 
 export async function GET({ url }: { url: URL }) {

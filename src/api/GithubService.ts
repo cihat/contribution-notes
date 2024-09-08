@@ -93,13 +93,13 @@ class GithubService {
     };
   }
 
-  private delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
   public async fetchDataForAllYears(): Promise<UserContributions> {
     const years = await this.fetchYears();
-    return await Promise.all(
+    if (years.length === 0) {
+      throw new Error("No years found for the user.");
+    }
+
+    return Promise.all(
       years.map((year) => this.fetchDataForYear(year.href, year.text))
     ).then((resp) => {
       return {
