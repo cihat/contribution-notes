@@ -29,10 +29,6 @@
 					userStore.setStatus(Status.Error);
 				} else {
 					userStore.setUserContributions(data);
-					userStore.setStatus(Status.Success);
-					toast.success('User found successfully 🚀', {
-						description: "User's contributions are fetched successfully!"
-					});
 				}
 			})
 			.catch((err) => {
@@ -42,7 +38,7 @@
 			.finally(() => {
 				username = '';
 				//FIX: here broken code
-				userStore.setStatus(Status.Success);
+				// userStore.setStatus(Status.Success);
 			});
 	}
 

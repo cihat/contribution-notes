@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { userStore } from '~/store';
 	import { Status, type State } from '~/types';
@@ -9,6 +9,7 @@
 
 	const unsubscribe = userStore.subscribe((value) => {
 		store = value;
+		// console.log('Current store:', store);
 		if (store.status === Status.Success) {
 			draw(store.userContributions);
 		} else if (store.status === Status.Error) {
@@ -35,25 +36,28 @@
 </script>
 
 <div class="no-scrollbar chart-wrapper flex min-h-screen justify-center overflow-auto">
-	{#if store.status === Status.Error}
-		<div class="flex items-center justify-center">
-			<p class="text-center align-middle text-4xl text-red-400 text-red-500">
-				Error occurred while drawing chart! 😢
-			</p>
-		</div>
-	{:else if store.status === Status.Loading}
-		<div class="flex items-center justify-center">
-			<p class="text-center align-middle text-4xl font-bold text-blue-500">Loading chart...</p>
-		</div>
-	{:else if store.status === Status.Success}
-		<canvas bind:this={canvas} />
-	{:else if store.status === Status.Idle}
-		<div class="items center flex items-center justify-center">
-			<p class="text-center align-middle text-4xl font-bold text-orange-500">
-				Search for a user to draw chart!
-			</p>
-		</div>
-	{/if}
+	<!-- {#if store.status === Status.Success} -->
+	<div class="absolute top-6 z-40 flex">
+		{#if store.status === Status.Loading}
+			<div class="flex items-center justify-center">
+				<p class="text-center align-middle text-4xl font-bold text-blue-500">Loading chart...</p>
+			</div>
+		{:else if store.status === Status.Idle}
+			<div class="items center flex items-center justify-center">
+				<p class="text-center align-middle text-4xl font-bold text-orange-500">
+					Search for a user to draw chart!
+				</p>
+			</div>
+		{:else if store.status === Status.Error}
+			<div class="flex items-center justify-center">
+				<p class="text-center align-middle text-4xl text-red-400">
+					Error occurred while drawing chart! 😢
+				</p>
+			</div>
+		{/if}
+	</div>
+
+	<canvas bind:this={canvas} />
 </div>
 
 <style>
