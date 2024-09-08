@@ -7,11 +7,17 @@
 	let canvas: HTMLCanvasElement;
 	let store: State;
 
-	const unsubscribe = userStore.subscribe((value) => {
+	const unsubscribe = userStore.subscribe(async (value) => {
 		store = value;
-		// console.log('Current store:', store);
-		if (store.status === Status.Success) {
-			draw(store.userContributions);
+		if (store.status === Status.Success && canvas && store.userContributions) {
+			const options = {
+				data: store.userContributions,
+				username: store.userName,
+				themeName: 'standard',
+				footerText: 'GitHub Contributions Chart'
+			};
+			const { drawContributions } = await import('~/canvas');
+			drawContributions(canvas, options);
 		} else if (store.status === Status.Error) {
 			toast.error("Chart couldn't be drawn!", {
 				description: 'User contributions not found!'
@@ -22,17 +28,6 @@
 	onDestroy(() => {
 		unsubscribe();
 	});
-
-	const draw = async (contributions: any) => {
-		if (!canvas || !contributions) return;
-		const { drawContributions } = await import('github-contributions-canvas');
-		drawContributions(canvas, {
-			data: contributions,
-			username: store.userName,
-			themeName: 'standard',
-			footerText: ''
-		});
-	};
 </script>
 
 <div class="no-scrollbar chart-wrapper flex min-h-screen justify-center overflow-auto">
@@ -57,7 +52,7 @@
 		{/if}
 	</div>
 
-	<canvas bind:this={canvas} />
+	<canvas bind:this={canvas} id="contributions-canvas" />
 </div>
 
 <style>
