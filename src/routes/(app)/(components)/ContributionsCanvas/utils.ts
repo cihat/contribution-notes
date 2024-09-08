@@ -8,7 +8,6 @@ import startOfWeek from 'date-fns/startOfWeek';
 import addWeeks from 'date-fns/addWeeks';
 import format from 'date-fns/format';
 
-// Constants
 const boxWidth = 10;
 const boxMargin = 2;
 const textHeight = 15;
@@ -18,6 +17,7 @@ const defaultFontFace = 'IBM Plex Mono';
 const headerHeight = 60;
 const yearHeight = textHeight + (boxWidth + boxMargin) * 8 + canvasMargin;
 const scaleFactor = getPixelRatio();
+const cellRadius = 2;
 
 // Utility Functions
 function getPixelRatio() {
@@ -106,18 +106,17 @@ function drawYear(ctx, opts) {
       const rectY = offsetY + textHeight + (boxWidth + boxMargin) * y;
 
       // Draw the rounded rectangle with fill color and border
-      const radius = 2; // 2px border-radius
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.moveTo(rectX + radius, rectY);
-      ctx.lineTo(rectX + boxWidth - radius, rectY);
-      ctx.quadraticCurveTo(rectX + boxWidth, rectY, rectX + boxWidth, rectY + radius);
-      ctx.lineTo(rectX + boxWidth, rectY + boxWidth - radius);
-      ctx.quadraticCurveTo(rectX + boxWidth, rectY + boxWidth, rectX + boxWidth - radius, rectY + boxWidth);
-      ctx.lineTo(rectX + radius, rectY + boxWidth);
-      ctx.quadraticCurveTo(rectX, rectY + boxWidth, rectX, rectY + boxWidth - radius);
-      ctx.lineTo(rectX, rectY + radius);
-      ctx.quadraticCurveTo(rectX, rectY, rectX + radius, rectY);
+      ctx.moveTo(rectX + cellRadius, rectY);
+      ctx.lineTo(rectX + boxWidth - cellRadius, rectY);
+      ctx.quadraticCurveTo(rectX + boxWidth, rectY, rectX + boxWidth, rectY + cellRadius);
+      ctx.lineTo(rectX + boxWidth, rectY + boxWidth - cellRadius);
+      ctx.quadraticCurveTo(rectX + boxWidth, rectY + boxWidth, rectX + boxWidth - cellRadius, rectY + boxWidth);
+      ctx.lineTo(rectX + cellRadius, rectY + boxWidth);
+      ctx.quadraticCurveTo(rectX, rectY + boxWidth, rectX, rectY + boxWidth - cellRadius);
+      ctx.lineTo(rectX, rectY + cellRadius);
+      ctx.quadraticCurveTo(rectX, rectY, rectX + cellRadius, rectY);
       ctx.closePath();
       ctx.fill();
     }
