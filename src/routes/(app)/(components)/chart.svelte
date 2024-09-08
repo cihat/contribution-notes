@@ -10,14 +10,14 @@
 
 	const unsubscribe = userStore.subscribe(async (value) => {
 		store = value;
-		if (store.status === Status.Success && store.userContributions) {
+		if (store.status.type === Status.Success && store.userContributions) {
 			options = {
 				data: store.userContributions,
 				username: store.userName,
 				themeName: 'standard',
 				footerText: 'GitHub Contributions Chart'
 			};
-		} else if (store.status === Status.Error) {
+		} else if (store.status.type === Status.Error) {
 			toast.error("Chart couldn't be drawn!", {
 				description: 'User contributions not found!'
 			});
@@ -30,26 +30,26 @@
 </script>
 
 <div class="no-scrollbar chart-wrapper flex min-h-screen justify-center overflow-auto">
-	{#if store.status === Status.Success && options}
+	{#if store.status.type === Status.Success && options}
 		<ContributionsCanvas {options} />
 	{:else}
 		<div
 			class="absolute top-40 z-40 flex scroll-m-20 rounded-md border bg-white p-20 text-xl font-semibold tracking-tight md:top-20"
 		>
-			{#if store.status === Status.Loading}
+			{#if store.status.type === Status.Loading}
 				<div class="flex items-center justify-center">
-					<p class="text-center align-middle text-xl font-bold text-blue-500">Loading chart...</p>
+					<p class="text-center align-middle text-xl font-bold text-blue-500">Loading canvas...</p>
 				</div>
-			{:else if store.status === Status.Idle}
+			{:else if store.status.type === Status.Idle}
 				<div class="items center flex items-center justify-center">
 					<p class="text-center align-middle text-xl font-bold text-orange-500">
 						Search for a user to draw chart!
 					</p>
 				</div>
-			{:else if store.status === Status.Error}
+			{:else if store.status.type === Status.Error}
 				<div class="flex items-center justify-center">
-					<p class="text-center align-middle text-xl text-red-400">
-						Error occurred while drawing chart! 😢
+					<p class="block text-center align-middle text-xl text-red-400">
+						{store.status.message}
 					</p>
 				</div>
 			{/if}

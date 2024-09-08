@@ -35,5 +35,8 @@ export enum FormatEnum {
 export interface State {
   userName: string;
   userContributions: UserContributions | null;
-  status: Status;
+  status: {
+    type: Status;
+    message: string;
+  }
 }

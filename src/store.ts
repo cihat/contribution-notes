@@ -5,7 +5,10 @@ import { toast } from "svelte-sonner";
 const initialState: StoreState = {
   userName: "",
   userContributions: null,
-  status: Status.Idle,
+  status: {
+    type: Status.Idle,
+    message: "",
+  }
 };
 
 function createUserContributionStore() {
@@ -34,14 +37,21 @@ function createUserContributionStore() {
         return {
           ...state,
           userContributions,
-          status: Status.Success,
+          status: {
+            type: Status.Success,
+          }
         };
       });
     },
-    setStatus: (status: Status) => {
+    setStatus: ({ type, message }: { type: Status, message: string }) => {
       update((state) => ({
         ...state,
-        status,
+        status: {
+          ...state.status,
+          type,
+          message
+
+        }
       }));
     },
     reset: () => {
