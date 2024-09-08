@@ -27,7 +27,7 @@
 			<Sidebar />
 		</Resizable.Pane>
 		<Resizable.Handle withHandle />
-		<Resizable.Pane defaultSize={50} minSize={50} maxSize={50} class="bg-white">
+		<Resizable.Pane defaultSize={50} minSize={35} maxSize={50} class="bg-white">
 			<Chart />
 		</Resizable.Pane>
 		<Resizable.Handle withHandle />

@@ -8,8 +8,6 @@
 	let store: State;
 
 	const unsubscribe = userStore.subscribe(async (value) => {
-		console.log('value', value);
-
 		store = value;
 		if (store.status === Status.Success && canvas && store.userContributions) {
 			const options = {
@@ -33,8 +31,7 @@
 </script>
 
 <div class="no-scrollbar chart-wrapper flex min-h-screen justify-center overflow-auto">
-	<!-- {#if store.status === Status.Success} -->
-	<div class="absolute md:top-2 top-40 z-40 flex">
+	<div class="absolute top-40 z-40 flex md:top-2">
 		{#if store.status === Status.Loading}
 			<div class="flex items-center justify-center">
 				<p class="text-center align-middle text-xl font-bold text-blue-500">Loading chart...</p>
@@ -64,7 +61,10 @@
 		margin: 20 auto 0;
 	}
 	canvas {
-		width: 100%;
 		height: min-content;
+
+		@media (max-width: 640px) {
+			width: 100%;
+		}
 	}
 </style>

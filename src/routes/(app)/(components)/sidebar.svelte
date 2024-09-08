@@ -63,7 +63,7 @@
 		placeholder="Github Username..."
 		bind:value={username}
 		on:keydown={handleInput}
-		class="flex-grow md:flex-none"
+		class="flex-grow"
 	/>
 	<Button variant="outline" on:click={getData} class="w-full md:w-auto">{inputText}</Button>
 	<Toaster />

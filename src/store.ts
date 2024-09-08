@@ -27,10 +27,10 @@ function createUserContributionStore() {
             status: Status.Error,
           };
         }
+
         toast.success('User found successfully 🚀', {
           description: "User's contributions are fetched successfully!"
         });
-
         return {
           ...state,
           userContributions,
