@@ -37,8 +37,6 @@
 			})
 			.finally(() => {
 				username = '';
-				//FIX: here broken code
-				// userStore.setStatus(Status.Success);
 			});
 	}
 
@@ -59,14 +57,14 @@
 	});
 </script>
 
-<aside class="sticky top-0 flex h-screen p-2 pt-4">
+<aside class="sticky top-0 flex flex-col md:flex-row h-auto md:h-screen p-2 pt-4 space-y-2 md:space-y-0 md:space-x-2 bg-white">
 	<Input
 		type="text"
 		placeholder="Github Username..."
 		bind:value={username}
 		on:keydown={handleInput}
-		class="mr-2"
+		class="flex-grow md:flex-none"
 	/>
-	<Button variant="outline" on:click={getData}>{inputText}</Button>
+	<Button variant="outline" on:click={getData} class="w-full md:w-auto">{inputText}</Button>
 	<Toaster />
 </aside>

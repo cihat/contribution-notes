@@ -8,6 +8,8 @@
 	let store: State;
 
 	const unsubscribe = userStore.subscribe(async (value) => {
+		console.log('value', value);
+
 		store = value;
 		if (store.status === Status.Success && canvas && store.userContributions) {
 			const options = {
@@ -32,20 +34,20 @@
 
 <div class="no-scrollbar chart-wrapper flex min-h-screen justify-center overflow-auto">
 	<!-- {#if store.status === Status.Success} -->
-	<div class="absolute top-6 z-40 flex">
+	<div class="absolute md:top-2 top-40 z-40 flex">
 		{#if store.status === Status.Loading}
 			<div class="flex items-center justify-center">
-				<p class="text-center align-middle text-4xl font-bold text-blue-500">Loading chart...</p>
+				<p class="text-center align-middle text-xl font-bold text-blue-500">Loading chart...</p>
 			</div>
 		{:else if store.status === Status.Idle}
 			<div class="items center flex items-center justify-center">
-				<p class="text-center align-middle text-4xl font-bold text-orange-500">
+				<p class="text-center align-middle text-xl font-bold text-orange-500">
 					Search for a user to draw chart!
 				</p>
 			</div>
 		{:else if store.status === Status.Error}
 			<div class="flex items-center justify-center">
-				<p class="text-center align-middle text-4xl text-red-400">
+				<p class="text-center align-middle text-xl text-red-400">
 					Error occurred while drawing chart! 😢
 				</p>
 			</div>
