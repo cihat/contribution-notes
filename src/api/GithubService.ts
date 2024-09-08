@@ -1,106 +1,128 @@
 // @ts-nocheck
-import * as cheerio from "cheerio";
-import { COLOR_MAP } from "../constants";
-import _ from "lodash";
-import { FormatEnum, type UserContributions, type YearData } from "~/types";
+import { FormatEnum } from '~/types';
+import _ from 'lodash';
+import { request, gql } from 'graphql-request';
+import { COLOR_MAP } from '~/constants';
+
+const GITHUB_GRAPHQL_API = 'https://api.github.com/graphql';
+
+// const COLOR_MAP = {
+//   0: '#ebedf0', // No contributions
+//   1: '#c6e48b', // 1-9 contributions
+//   2: '#7bc96f', // 10-19 contributions
+//   3: '#239a3b', // 20-29 contributions
+//   4: '#196127', // 30+ contributions
+// };
 
 class GithubService {
-  private username: string = "";
+  private username: string = '';
   private format: string = FormatEnum.flat;
+  private token: string = import.meta.env.VITE_GITHUB_TOKEN;
 
   private async fetchYears(): Promise<{ href: string; text: string }[]> {
-    const data = await fetch(`https://github.com/${this.username}?tab=contributions`, {
-      headers: {
-        "x-requested-with": "XMLHttpRequest"
+    const query = gql`
+      query($username: String!) {
+        user(login: $username) {
+          contributionsCollection {
+            contributionYears
+          }
+        }
       }
-    });
-    const body = await data.text();
-    const $ = cheerio.load(body);
-    return $(".js-year-link")
-      .get()
-      .map((a) => {
-        const $a = $(a);
-        const href = $a.attr("href");
-        const githubUrl = new URL(`https://github.com${href}`);
-        githubUrl.searchParams.set("tab", "contributions");
-        const formattedHref = `${githubUrl.pathname}${githubUrl.search}`;
+    `;
 
-        return {
-          href: formattedHref,
-          text: $a.text().trim()
-        };
-      });
+    const variables = {
+      username: this.username,
+    };
+
+    const response = await request(GITHUB_GRAPHQL_API, query, variables, {
+      Authorization: `Bearer ${this.token}`,
+    });
+
+    return response.user.contributionsCollection.contributionYears.map((year) => ({
+      href: `/users/${this.username}/contributions?from=${year}-01-01&to=${year}-12-31`,
+      text: year.toString(),
+    }));
   }
 
   private async fetchDataForYear(url: string, year: string): Promise<YearData> {
-    const data = await fetch(`https://github.com${url}`, {
-      headers: {
-        "x-requested-with": "XMLHttpRequest"
+    const query = gql`
+      query($username: String!, $from: DateTime!, $to: DateTime!) {
+        user(login: $username) {
+          contributionsCollection(from: $from, to: $to) {
+            contributionCalendar {
+              totalContributions
+              weeks {
+                contributionDays {
+                  date
+                  contributionCount
+                }
+              }
+            }
+          }
+        }
       }
-    });
-    const $ = cheerio.load(await data.text());
-    const $days = $(
-      "table.ContributionCalendar-grid td.ContributionCalendar-day"
-    );
+    `;
 
-    const contribText = $(".js-yearly-contributions h2")
-      .text()
-      .trim()
-      .match(/^([0-9,]+)\s/);
-    let contribCount;
-    if (contribText) {
-      [contribCount] = contribText;
-      contribCount = parseInt(contribCount.replace(/,/g, ""), 10);
-    }
+    const [from, to] = url.split('?from=')[1].split('&to=').map((date) => new Date(date).toISOString());
+
+    const variables = {
+      username: this.username,
+      from,
+      to,
+    };
+
+    const response = await request(GITHUB_GRAPHQL_API, query, variables, {
+      Authorization: `Bearer ${this.token}`,
+    });
+
+    const calendar = response.user.contributionsCollection.contributionCalendar;
+    const $days = calendar.weeks.flatMap((week) => week.contributionDays);
 
     return {
       year,
-      total: contribCount || 0,
+      total: calendar.totalContributions,
       range: {
-        start: $($days.get(0)).attr("data-date"),
-        end: $($days.get($days.length - 1)).attr("data-date")
+        start: $days[0]?.date,
+        end: $days[$days.length - 1]?.date,
       },
       contributions: (() => {
-        const parseDay = (day, index) => {
-          const $day = $(day);
-          const date = $day
-            .attr("data-date")
-            .split("-")
-            .map((d) => parseInt(d, 10));
-          const color = COLOR_MAP[$day.attr("data-level")];
+        const parseDay = (day) => {
+          const date = day.date.split('-').map((d) => parseInt(d, 10));
+          const intensity = Math.min(Math.floor(day.contributionCount, 10), 4); // Determine intensity based on contribution count
+          const color = COLOR_MAP[intensity];
           const value = {
-            date: $day.attr("data-date"),
-            count: index === 0 ? contribCount : 0,
+            date: day.date,
+            count: day.contributionCount,
             color,
-            intensity: $day.attr("data-level") || 0
+            intensity,
           };
           return { date, value };
         };
 
         if (this.format !== FormatEnum.nested) {
-          return $days.get().map((day, index) => parseDay(day, index).value);
+          return $days.map(parseDay).map((day) => day.value);
         }
 
-        return $days.get().reduce((o, day, index) => {
-          const { date, value } = parseDay(day, index);
+        return $days.reduce((o, day) => {
+          const { date, value } = parseDay(day);
           const [y, m, d] = date;
           if (!o[y]) o[y] = {};
           if (!o[y][m]) o[y][m] = {};
           o[y][m][d] = value;
           return o;
         }, {});
-      })()
+      })(),
     };
   }
 
   public async fetchDataForAllYears(): Promise<UserContributions> {
     const years = await this.fetchYears();
     if (years.length === 0) {
-      throw new Error("No years found for the user.");
+      throw new Error('No years found for the user.');
     }
 
     return Promise.all(
-      years.map((year) => this.fetchDataForYear(year.href, year.text))
+      years.map((year) => this.fetchDataForYear(year.href, year.text)),
     ).then((resp) => {
       return {
         years: (() => {
@@ -121,17 +143,17 @@ class GithubService {
                 if (a.date < b.date) return 1;
                 else if (a.date > b.date) return -1;
                 return 0;
-              })
+              }),
       };
     });
   }
 
   public setUserName = (username: string) => {
     this.username = username;
-  }
+  };
   public setFormat = (format: FormatEnum) => {
     this.format = format;
-  }
+  };
 }
 
 // Singleton instance

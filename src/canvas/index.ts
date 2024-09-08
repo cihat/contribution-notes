@@ -108,6 +108,15 @@ function getDateInfo(data: DataStruct, date: string) {
   return data.contributions.find(contrib => contrib.date === date);
 }
 
+function darkenColor(color: string, percent: number): string {
+  const num = parseInt(color.slice(1), 16),
+    amt = Math.round(2.55 * percent),
+    R = (num >> 16) + amt,
+    G = (num >> 8 & 0x00FF) + amt,
+    B = (num & 0x0000FF) + amt;
+  return `#${(0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1).toUpperCase()}`;
+}
+
 function drawYear(ctx: CanvasRenderingContext2D, opts: DrawYearOptions) {
   const {
     year,
@@ -169,15 +178,31 @@ function drawYear(ctx: CanvasRenderingContext2D, opts: DrawYearOptions) {
       if (isAfter(cellDate, lastDate) || !day.info) {
         continue;
       }
-      // @ts-ignore
       const color = theme[`grade${day.info.intensity}`];
+      const darkColor = darkenColor(color, -20); // Darken the color by 20%
+      const rectX = offsetX + (boxWidth + boxMargin) * x;
+      const rectY = offsetY + textHeight + (boxWidth + boxMargin) * y;
+
+      // Draw the rounded rectangle with fill color and border
+      const radius = 2; // 2px border-radius
       ctx.fillStyle = color;
-      ctx.fillRect(
-        offsetX + (boxWidth + boxMargin) * x,
-        offsetY + textHeight + (boxWidth + boxMargin) * y,
-        10,
-        10
-      );
+      ctx.beginPath();
+      ctx.moveTo(rectX + radius, rectY);
+      ctx.lineTo(rectX + boxWidth - radius, rectY);
+      ctx.quadraticCurveTo(rectX + boxWidth, rectY, rectX + boxWidth, rectY + radius);
+      ctx.lineTo(rectX + boxWidth, rectY + boxWidth - radius);
+      ctx.quadraticCurveTo(rectX + boxWidth, rectY + boxWidth, rectX + boxWidth - radius, rectY + boxWidth);
+      ctx.lineTo(rectX + radius, rectY + boxWidth);
+      ctx.quadraticCurveTo(rectX, rectY + boxWidth, rectX, rectY + boxWidth - radius);
+      ctx.lineTo(rectX, rectY + radius);
+      ctx.quadraticCurveTo(rectX, rectY, rectX + radius, rectY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Draw the outline
+      ctx.strokeStyle = darkColor; // Darker color for the outline
+      ctx.lineWidth = 1; // 1px outline
+      ctx.stroke();
     }
   }
 
@@ -311,3 +336,4 @@ export function drawContributions(canvas: HTMLCanvasElement, opts: Options) {
 }
 
 export { themes } from "./themes";
+
