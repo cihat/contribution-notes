@@ -6,17 +6,8 @@ import _ from "lodash";
 import { FormatEnum, type UserContributions, type YearData } from "~/types";
 
 class GithubService {
-  private username: string;
-  private format: string;
-
-  constructor(username: string, format: FormatEnum) {
-    if (!username || username === "") {
-      throw new Error("Please provide a username");
-    }
-
-    this.username = username;
-    this.format = format;
-  }
+  private username: string = "";
+  private format: string = FormatEnum.flat;
 
   private async fetchYears(): Promise<{ href: string; text: string }[]> {
     const data = await fetch(`https://github.com/${this.username}?tab=contributions`, {
@@ -109,7 +100,7 @@ class GithubService {
 
   public async fetchDataForAllYears(): Promise<UserContributions> {
     const years = await this.fetchYears();
-    return Promise.all(
+    return await Promise.all(
       years.map((year) => this.fetchDataForYear(year.href, year.text))
     ).then((resp) => {
       return {
@@ -139,14 +130,17 @@ class GithubService {
   public setUserName = (username: string) => {
     this.username = username;
   }
+  public setFormat = (format: FormatEnum) => {
+    this.format = format;
+  }
 }
 
 // Singleton instance
 let githubServiceInstance: GithubService | null = null;
 
-export function getGithubService(username?: string = "", format: FormatEnum): GithubService {
+export function getGithubService(): GithubService {
   if (!githubServiceInstance) {
-    githubServiceInstance = new GithubService(username, format);
+    githubServiceInstance = new GithubService();
   }
   return githubServiceInstance;
 }
