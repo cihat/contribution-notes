@@ -1,5 +1,4 @@
 // @ts-nocheck
-import cheerio from "cheerio";
 import * as cheerio from "cheerio";
 import { COLOR_MAP } from "../constants";
 import _ from "lodash";
