@@ -92,7 +92,7 @@
 							id="framework"
 							placeholder="Name of your repo"
 							on:keydown={handleInput}
-							bind:value={$userStore.repoName}
+							value={$userStore.repoName}
 						/>
 					</div>
 				{/if}
