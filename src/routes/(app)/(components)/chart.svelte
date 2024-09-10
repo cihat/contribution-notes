@@ -63,11 +63,4 @@
 		height: 100vh;
 		margin: 20 auto 0;
 	}
-	canvas {
-		height: min-content;
-
-		@media (max-width: 640px) {
-			width: 100%;
-		}
-	}
 </style>
