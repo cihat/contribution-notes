@@ -12,6 +12,10 @@ async function fetchUserContributions(username: string, format: FormatEnum) {
 
 export async function GET({ url }: { url: URL }) {
   const username = url.searchParams.get('username');
+  //TODO: Add repoName to the store
+  // const repoName = url.searchParams.get('repo');
+
+
 
   if (!username) {
     return json({ error: 'Username is required' }, { status: 400 });

@@ -20,18 +20,12 @@
 
 	$: {
 		if ($userStore.status.type === Status.Success && $userStore.userContributions) {
-			console.log('store >>', $userStore);
-
 			options = {
 				data: $userStore.userContributions,
 				username: $userStore.userName,
 				themeName: 'standard',
 				footerText: 'GitHub Contributions Chart'
 			};
-		} else {
-			toast.error("Chart couldn't be drawn!", {
-				description: 'User contributions not found!'
-			});
 		}
 	}
 </script>

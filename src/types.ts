@@ -12,12 +12,12 @@ export interface YearData {
     start: string;
     end: string;
   };
-  contributions: Contribution[] | Record<string, any>;
+  contributions: Contribution[] | Record<string, unknown>;
 }
 
 export interface UserContributions {
-  years: YearData[] | Record<string, any>;
-  contributions: Contribution[] | Record<string, any>;
+  years: YearData[] | Record<string, unknown>;
+  contributions: Contribution[] | Record<string, unknown>;
 }
 
 export enum Status {
@@ -34,9 +34,26 @@ export enum FormatEnum {
 
 export interface State {
   userName: string;
+  repoName: string;
   userContributions: UserContributions | null;
   status: {
     type: Status;
     message: string;
   }
+}
+
+// types.ts
+export enum TabEntryEnum {
+  Contributions = 'Contributions',
+  RepoRetention = 'Repo Retention'
+}
+
+export interface TabEntry {
+  title: string;
+  description: string;
+  type: TabEntryEnum;
+}
+
+export type Tabs = {
+  [key in TabEntryEnum]: TabEntry;
 }

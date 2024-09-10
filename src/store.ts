@@ -4,6 +4,7 @@ import { toast } from "svelte-sonner";
 
 const initialState: StoreState = {
   userName: "",
+  repoName: "",
   userContributions: null,
   status: {
     type: Status.Idle,
@@ -16,10 +17,17 @@ function createUserContributionStore() {
 
   return {
     subscribe,
+    set,
     setUserName: (userName: string) => {
       update((state) => ({
         ...state,
         userName,
+      }));
+    },
+    setRepoName: (repoName: string) => {
+      update((state) => ({
+        ...state,
+        repoName,
       }));
     },
     setUserContributions: (userContributions: UserContributions) => {
