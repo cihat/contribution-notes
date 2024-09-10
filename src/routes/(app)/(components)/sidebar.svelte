@@ -59,7 +59,6 @@
 	};
 
 	let inputText = '';
-	$: inputText = store.status.type === Status.Loading ? 'Loading...' : 'Contributions 🚀.';
 
 	onDestroy(() => {
 		unsubscribe();
@@ -76,6 +75,8 @@
 		on:keydown={handleInput}
 		class="flex-grow"
 	/>
-	<Button variant="outline" on:click={getData} class="w-full md:w-auto">{inputText}</Button>
+	<Button variant="outline" on:click={getData} class="w-full md:w-auto">
+		{store.status.type === Status.Loading ? 'Loading...' : 'Contributions 🚀.'}
+	</Button>
 	<Toaster />
 </aside>

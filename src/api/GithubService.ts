@@ -6,16 +6,9 @@ import { COLOR_MAP } from '~/constants';
 
 const GITHUB_GRAPHQL_API = 'https://api.github.com/graphql';
 
-// const COLOR_MAP = {
-//   0: '#ebedf0', // No contributions
-//   1: '#c6e48b', // 1-9 contributions
-//   2: '#7bc96f', // 10-19 contributions
-//   3: '#239a3b', // 20-29 contributions
-//   4: '#196127', // 30+ contributions
-// };
-
 class GithubService {
   private username: string = '';
+  private repoName: string = '';
   private format: string = FormatEnum.flat;
   private token: string = import.meta.env.VITE_GITHUB_TOKEN;
 
