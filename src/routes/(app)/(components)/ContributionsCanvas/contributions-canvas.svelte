@@ -37,5 +37,6 @@
 	canvas {
 		height: min-content;
 		width: 100%;
+		max-width: 676px;
 	}
 </style>
