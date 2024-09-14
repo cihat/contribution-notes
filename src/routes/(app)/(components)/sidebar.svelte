@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Toaster } from '$lib/components/ui/sonner';
 	import { TabEntryEnum } from '~/types';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import UserInfoCard from './user-info-card.svelte';
 	import type { Tabs as TabsType } from '~/types';
+	import { userStore } from '~/store';
 
 	const tabs: TabsType = {
 		[TabEntryEnum.Contributions]: {
@@ -25,7 +25,7 @@
 </script>
 
 <aside
-	class="sticky top-0 h-auto  md:max-w-25vw space-y-2 bg-white p-2 pt-4 md:h-screen md:w-auto md:space-x-2 md:space-y-0"
+	class="sticky top-0 h-auto space-y-2 bg-white p-2 pt-4 md:h-screen md:w-auto md:max-w-25vw md:space-x-2 md:space-y-0"
 >
 	<Tabs.Root value={TabEntryEnum.Contributions}>
 		<Tabs.List class="grid grid-cols-2 gap-2">
@@ -40,5 +40,4 @@
 			</Tabs.Content>
 		{/each}
 	</Tabs.Root>
-	<Toaster />
 </aside>

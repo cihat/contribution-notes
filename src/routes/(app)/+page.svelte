@@ -7,6 +7,7 @@
 	import Chart from './(components)/chart.svelte';
 	import Note from './(components)/note.svelte';
 	import { writable } from 'svelte/store';
+	import { Toaster } from '$lib/components/ui/sonner';
 
 	const isDesktop = writable(false);
 
@@ -48,3 +49,5 @@
 		</div>
 	</div>
 {/if}
+
+<Toaster />

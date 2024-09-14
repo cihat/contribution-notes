@@ -5,8 +5,6 @@
 	let options = {};
 
 	userStore.subscribe((value) => {
-		console.log('value >>', value);
-
 		options = {
 			chart: { type: 'areaspline' },
 			title: { text: 'Code Retention Over Time', align: 'left' },
