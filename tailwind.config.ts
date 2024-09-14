@@ -56,7 +56,10 @@ const config: Config = {
 			},
 			fontFamily: {
 				sans: [...fontFamily.sans]
-			}
+			},
+			maxWidth: {
+        '25vw': '25vw',
+      },
 		}
 	},
 };

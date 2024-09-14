@@ -70,7 +70,7 @@
 		{/if}
 	{:else}
 		<div
-			class="absolute top-40 z-40 flex scroll-m-20 rounded-md border bg-white p-20 text-xl font-semibold tracking-tight md:top-20"
+			class=" absolute z-40 flex scroll-m-20 rounded-md border bg-white p-20 text-xl font-semibold tracking-tight md:top-20"
 		>
 			{#if $userStore.status.type === Status.Loading}
 				<div class="flex items-center justify-center">

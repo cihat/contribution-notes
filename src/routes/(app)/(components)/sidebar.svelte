@@ -25,10 +25,10 @@
 </script>
 
 <aside
-	class="sticky top-0 flex h-auto flex-col space-y-2 bg-white p-2 pt-4 md:h-screen md:flex-row md:space-x-2 md:space-y-0"
+	class="sticky top-0 h-auto  md:max-w-25vw space-y-2 bg-white p-2 pt-4 md:h-screen md:w-auto md:space-x-2 md:space-y-0"
 >
-	<Tabs.Root value={TabEntryEnum.Contributions} class="w-full">
-		<Tabs.List class="grid w-full grid-cols-2">
+	<Tabs.Root value={TabEntryEnum.Contributions}>
+		<Tabs.List class="grid grid-cols-2 gap-2">
 			{#each tabEntries as [tabKey, tab]}
 				<Tabs.Trigger value={tabKey}>{tab.title}</Tabs.Trigger>
 			{/each}

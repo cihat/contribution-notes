@@ -23,15 +23,15 @@
 
 {#if $isDesktop}
 	<Resizable.PaneGroup direction="horizontal" class="flex h-screen">
-		<Resizable.Pane defaultSize={25} minSize={15} maxSize={30}>
+		<Resizable.Pane minSize={15} maxSize={30}>
 			<Sidebar />
 		</Resizable.Pane>
 		<Resizable.Handle withHandle />
-		<Resizable.Pane defaultSize={55} minSize={45} maxSize={60}>
+		<Resizable.Pane defaultSize={50} minSize={45} maxSize={60}>
 			<Chart />
 		</Resizable.Pane>
 		<Resizable.Handle withHandle />
-		<Resizable.Pane defaultSize={25} minSize={20} maxSize={60}>
+		<Resizable.Pane minSize={20} maxSize={60}>
 			<Note />
 		</Resizable.Pane>
 	</Resizable.PaneGroup>
