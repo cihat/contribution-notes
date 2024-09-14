@@ -1,10 +1,12 @@
 import { writable } from "svelte/store";
-import { Status, type State as StoreState, type UserContributions } from "./types";
+import { Status, TabEntryEnum, type State as StoreState, type UserContributions } from "./types";
 import { toast } from "svelte-sonner";
 
 const initialState: StoreState = {
   userName: "",
   repoName: "",
+  repoData: {},
+  requestType: TabEntryEnum.Contributions,
   userContributions: null,
   status: {
     type: Status.Idle,
@@ -50,6 +52,22 @@ function createUserContributionStore() {
           }
         };
       });
+    },
+    setRequestType: (requestType: TabEntryEnum) => {
+      update((state) => ({
+        ...state,
+        requestType,
+      }))
+    },
+    setRepoData: (repoData: object) => {
+      update((state) => ({
+        ...state,
+        repoData,
+        status: {
+          type: Status.Success,
+          message: "Repository data fetched successfully!"
+        }
+      }));
     },
     setStatus: ({ type, message }: { type: Status, message: string }) => {
       update((state) => ({

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { FormatEnum } from '~/types';
+import { FormatEnum, type Granularity } from '~/types';
 import _ from 'lodash';
 import { request, gql } from 'graphql-request';
 import { COLOR_MAP } from '~/constants';
@@ -141,9 +141,104 @@ class GithubService {
     });
   }
 
+  private async fetchCodeChangesForRepo() {
+    const query = gql`
+      query($username: String!, $repoName: String!) {
+        repository(owner: $username, name: $repoName) {
+          defaultBranchRef {
+            target {
+              ... on Commit {
+                history(first: 100) {
+                  edges {
+                    node {
+                      additions
+                      committedDate
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      username: this.username,
+      repoName: this.repoName,
+    };
+
+    const response = await request(GITHUB_GRAPHQL_API, query, variables, {
+      Authorization: `Bearer ${this.token}`,
+    });
+
+    const history = response.repository.defaultBranchRef.target.history.edges;
+
+    return history.map((commit) => ({
+      date: new Date(commit.node.committedDate).toISOString().split('T')[0],
+      additions: commit.node.additions,
+    }));
+  }
+
+  public async getCodeRetentionData(granularity: Granularity) {
+    const codeChanges = await this.fetchCodeChangesForRepo();
+    const groupedData = {};
+
+    codeChanges.forEach((change) => {
+      let key;
+      const date = new Date(change.date);
+      switch (granularity) {
+        case 'week':
+          const week = `${date.getFullYear()}-W${Math.ceil(date.getDate() / 7)}`;
+          key = week;
+          break;
+        case 'month':
+          key = change.date.slice(0, 7); // YYYY-MM
+          break;
+        case 'year':
+          key = change.date.slice(0, 4); // YYYY
+          break;
+        default:
+          key = change.date;
+      }
+
+      if (!groupedData[key]) {
+        groupedData[key] = { additions: 0, retained: [] };
+      }
+
+      groupedData[key].additions += change.additions;
+      groupedData[key].retained.push(change.additions);
+    });
+
+    const retentionData = [];
+
+    Object.keys(groupedData).forEach((key, index) => {
+      const data = {
+        name: key,
+        data: Array(Object.keys(groupedData).length).fill(0),
+      };
+
+      Object.keys(groupedData).forEach((innerKey, innerIndex) => {
+        if (innerIndex >= index) {
+          data.data[innerIndex] = groupedData[innerKey].retained.slice(0, index + 1).reduce((a, b) => a + b, 0);
+        }
+      });
+
+      retentionData.push(data);
+    });
+
+    return retentionData;
+  }
+
   public setUserName = (username: string) => {
     this.username = username;
   };
+  public setRepoName = (repoName: string) => {
+    this.repoName = repoName;
+  };
+  public setGranularity = (granularity: string) => {
+    this.granularity = granularity;
+  }
   public setFormat = (format: FormatEnum) => {
     this.format = format;
   };
@@ -159,4 +254,4 @@ export function getGithubService(): GithubService {
   return githubServiceInstance;
 }
 
-export default githubServiceInstance;
+export default getGithubService();

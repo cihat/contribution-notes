@@ -35,7 +35,9 @@ export enum FormatEnum {
 export interface State {
   userName: string;
   repoName: string;
+  repoData: object;
   userContributions: UserContributions | null;
+  requestType: TabEntryEnum;
   status: {
     type: Status;
     message: string;
@@ -57,3 +59,5 @@ export interface TabEntry {
 export type Tabs = {
   [key in TabEntryEnum]: TabEntry;
 }
+
+export type Granularity = 'day' | 'week' | 'month';

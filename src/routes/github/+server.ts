@@ -1,19 +1,28 @@
 import { json } from "@sveltejs/kit";
-import { getGithubService } from "~/api/GithubService";
+import githubServiceInstance from "~/api/GithubService";
 import { format } from "~/constants";
-import { FormatEnum } from "~/types";
+import { FormatEnum, type Granularity } from "~/types";
 
-async function fetchUserContributions(username: string, format: FormatEnum) {
-  const githubService = getGithubService();
+async function githubService({ username, repoName, format, granularity }: { username: string, repoName: string, format: FormatEnum, granularity: Granularity }) {
+  const githubService = githubServiceInstance;
   githubService.setUserName(username);
   githubService.setFormat(format);
-  return githubService.fetchDataForAllYears();
+  githubService.setRepoName(repoName);
+  githubService.setGranularity(granularity);
+  if (repoName) {
+    return githubService.getCodeRetentionData(granularity);
+  } else {
+    return githubService.fetchDataForAllYears();
+  }
 }
 
 export async function GET({ url }: { url: URL }) {
   const username = url.searchParams.get('username');
-  //TODO: Add repoName to the store
-  // const repoName = url.searchParams.get('repo');
+  const repoName = url.searchParams.get('repo');
+  const granularity = url.searchParams.get('granularity') as Granularity || 'week';
+
+
+  console.log('{username, repoName} >>', { username, repoName })
 
 
 
@@ -22,7 +31,7 @@ export async function GET({ url }: { url: URL }) {
   }
 
   try {
-    const data = await fetchUserContributions(username, format)
+    const data = await githubService({ username, repoName, format, granularity });
     return json(data, {
       headers: {
         'Cache-Control': 's-maxage=3600, stale-while-revalidate'

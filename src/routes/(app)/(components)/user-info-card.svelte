@@ -16,14 +16,19 @@
 		description: '',
 		type: TabEntryEnum.Contributions
 	};
+	let userConfig = {
+		username: '',
+		repoName: ''
+	};
 
 	async function getData() {
-		if (!$userStore.userName) {
+		if (!userConfig.username) {
 			toast.error('Please enter a GitHub username');
 			return;
 		}
 
-		userStore.setUserName($userStore.userName);
+		userStore.setUserName(userConfig.username);
+		userStore.setRepoName(userConfig.repoName);
 		userStore.setStatus({
 			type: Status.Loading,
 			message: 'Loading...'
@@ -32,8 +37,10 @@
 
 		if (props.type === TabEntryEnum.RepoRetention) {
 			endpoint = `/github?username=${$userStore.userName}&repo=${$userStore.repoName}`;
+			userStore.setRequestType(TabEntryEnum.RepoRetention);
 		} else {
 			endpoint = `/github?username=${$userStore.userName}`;
+			userStore.setRequestType(TabEntryEnum.Contributions);
 		}
 
 		fetch(endpoint)
@@ -46,7 +53,15 @@
 						message: data.error.split('.: ')[0] ?? 'User not found'
 					});
 				} else {
-					userStore.setUserContributions(data);
+					userStore.setStatus({
+						type: Status.Success,
+						message: 'User found'
+					});
+					if (props.type === TabEntryEnum.RepoRetention) {
+						userStore.setRepoData(data);
+					} else {
+						userStore.setUserContributions(data);
+					}
 				}
 			})
 			.catch((err) => {
@@ -82,7 +97,7 @@
 						id="name"
 						placeholder="Your Github username"
 						on:keydown={handleInput}
-						value={$userStore.userName}
+						bind:value={userConfig.username}
 					/>
 				</div>
 				{#if props.title === TabEntryEnum.RepoRetention}
@@ -92,7 +107,7 @@
 							id="framework"
 							placeholder="Name of your repo"
 							on:keydown={handleInput}
-							value={$userStore.repoName}
+							bind:value={userConfig.repoName}
 						/>
 					</div>
 				{/if}

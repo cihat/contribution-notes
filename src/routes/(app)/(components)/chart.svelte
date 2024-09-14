@@ -2,7 +2,8 @@
 	import { toast } from 'svelte-sonner';
 	import ContributionsCanvas from './ContributionsCanvas/contributions-canvas.svelte';
 	import { userStore } from '~/store';
-	import { Status, type State } from '~/types';
+	import { Status, TabEntryEnum, type State } from '~/types';
+	import RetentionChart from './retention-chart.svelte';
 
 	type Options = {
 		data: any;
@@ -18,21 +19,55 @@
 		footerText: 'GitHub Contributions Chart'
 	};
 
+	let retentionData = {
+		chart: { type: 'areaspline', inverted: true },
+		title: { text: 'Code Retention Over Time', align: 'left' },
+		xAxis: { categories: [] },
+		yAxis: { title: { text: 'Contributions' } },
+		series: [],
+		tooltip: {
+			shared: true,
+			headerFormat: '<table>'
+		}
+	};
+
 	$: {
-		if ($userStore.status.type === Status.Success && $userStore.userContributions) {
-			options = {
-				data: $userStore.userContributions,
-				username: $userStore.userName,
-				themeName: 'standard',
-				footerText: 'GitHub Contributions Chart'
-			};
+		if ($userStore.status.type === Status.Success) {
+			if ($userStore.requestType === TabEntryEnum.Contributions) {
+				options = {
+					data: $userStore.userContributions,
+					username: $userStore.userName,
+					themeName: 'standard',
+					footerText: 'GitHub Contributions Chart'
+				};
+			} else {
+				retentionData = {
+					chart: { type: 'areaspline', inverted: true },
+					title: { text: 'Code Retention Over Time', align: 'left' },
+					xAxis: { categories: $userStore.repoData?.map((item) => item.name) },
+					yAxis: { title: { text: 'Contributions' } },
+					series: $userStore.repoData.map((item) => ({
+						name: item.name,
+						data: [...item.data]
+					})),
+					tooltip: {
+						shared: true,
+						headerFormat: '<table>'
+					}
+				};
+				toast.info(`Showing first 100 commits for ${$userStore.userName}/${$userStore.repoName}`);
+			}
 		}
 	}
 </script>
 
 <div class="no-scrollbar chart-wrapper flex min-h-screen justify-center overflow-auto">
 	{#if $userStore.status.type === Status.Success && options}
-		<ContributionsCanvas {options} />
+		{#if $userStore.requestType === TabEntryEnum.Contributions}
+			<ContributionsCanvas {options} />
+		{:else}
+			<RetentionChart />
+		{/if}
 	{:else}
 		<div
 			class="absolute top-40 z-40 flex scroll-m-20 rounded-md border bg-white p-20 text-xl font-semibold tracking-tight md:top-20"
