@@ -34,11 +34,13 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@highcharts/svelte": "^1.1.0",
 		"bits-ui": "^0.21.13",
 		"clsx": "^2.1.1",
 		"date-fns": "^3.6.0",
 		"github-contributions-canvas": "^0.7.0",
 		"graphql-request": "^7.1.0",
+		"highcharts": "^11.4.8",
 		"lodash": "^4.17.21",
 		"mode-watcher": "^0.4.1",
 		"paneforge": "^0.0.5",
