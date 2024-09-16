@@ -1,13 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { drawContributions } from './utils';
-
-	type Options = {
-		data: any;
-		username: string;
-		themeName: string;
-		footerText: string;
-	};
+	import type { Options } from '~/types';
 
 	export let options: Options = {
 		data: null,

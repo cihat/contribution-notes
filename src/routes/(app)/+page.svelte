@@ -1,9 +1,7 @@
 <script lang="ts">
-	// @ts-nocheck
 	import { onMount } from 'svelte';
 	import * as Resizable from '$lib/components/ui/resizable';
 	import Sidebar from './(components)/sidebar.svelte';
-	import { userStore } from '~/store';
 	import Chart from './(components)/chart.svelte';
 	import Note from './(components)/note.svelte';
 	import { writable } from 'svelte/store';

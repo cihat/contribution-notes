@@ -2,15 +2,8 @@
 	import { toast } from 'svelte-sonner';
 	import ContributionsCanvas from './ContributionsCanvas/contributions-canvas.svelte';
 	import { userStore } from '~/store';
-	import { Status, TabEntryEnum, type State } from '~/types';
+	import { Status, TabEntryEnum, type Options } from '~/types';
 	import RetentionChart from './retention-chart.svelte';
-
-	type Options = {
-		data: any;
-		username: string;
-		themeName: string;
-		footerText: string;
-	};
 
 	let options: Options = {
 		data: null,
