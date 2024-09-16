@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import { Status, TabEntryEnum, type State } from '~/types';
+	import { Status, TabEntryEnum } from '~/types';
 	import { toast } from 'svelte-sonner';
 	import { userStore } from '~/store';
 

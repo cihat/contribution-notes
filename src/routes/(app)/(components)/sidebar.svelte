@@ -3,7 +3,6 @@
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import UserInfoCard from './user-info-card.svelte';
 	import type { Tabs as TabsType } from '~/types';
-	import { userStore } from '~/store';
 
 	const tabs: TabsType = {
 		[TabEntryEnum.Contributions]: {
