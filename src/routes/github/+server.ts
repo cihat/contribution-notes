@@ -21,11 +21,6 @@ export async function GET({ url }: { url: URL }) {
   const repoName = url.searchParams.get('repo');
   const granularity = url.searchParams.get('granularity') as Granularity || 'week';
 
-
-  console.log('{username, repoName} >>', { username, repoName })
-
-
-
   if (!username) {
     return json({ error: 'Username is required' }, { status: 400 });
   }
