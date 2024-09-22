@@ -4,7 +4,7 @@
 
 	export let options = {};
 
-	let chartElement: HTMLElement;
+	let chartElement;
 	let chart;
 
 	onMount(() => {
